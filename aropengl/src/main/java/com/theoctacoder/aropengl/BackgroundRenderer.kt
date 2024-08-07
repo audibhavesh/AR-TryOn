@@ -1,11 +1,15 @@
 import android.content.Context
+import android.graphics.Bitmap
+import android.media.Image
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
+import android.opengl.GLUtils
 import android.util.Log
 import com.google.ar.core.Frame
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
+
 
 class BackgroundRenderer(var cameraTextureId: Int) {
     private var quadProgram = 0
@@ -73,6 +77,8 @@ class BackgroundRenderer(var cameraTextureId: Int) {
 
         GLES20.glDepthMask(true)
         GLES20.glEnable(GLES20.GL_DEPTH_TEST)
+
+
     }
 
     private fun createProgram(context: Context): Int {

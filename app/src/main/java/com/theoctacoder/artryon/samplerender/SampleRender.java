@@ -18,6 +18,9 @@ package com.theoctacoder.artryon.samplerender;
 import android.content.res.AssetManager;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
+import android.provider.MediaStore;
+
+import com.theoctacoder.artryon.mediapipe.MediaPipeListener;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;

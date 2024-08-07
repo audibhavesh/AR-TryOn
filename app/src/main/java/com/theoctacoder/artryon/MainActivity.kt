@@ -1,36 +1,37 @@
 package com.theoctacoder.artryon
 
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.ar.core.Frame
 import com.google.ar.core.Session
 import com.google.ar.core.exceptions.CameraNotAvailableException
 import com.google.ar.core.exceptions.UnavailableApkTooOldException
 import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException
 import com.google.ar.core.exceptions.UnavailableSdkTooOldException
 import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException
+import com.google.mediapipe.framework.image.BitmapImageBuilder
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.permissionx.guolindev.PermissionX
 import com.theoctacoder.artryon.databinding.ActivityMainBinding
 import com.theoctacoder.artryon.helper.ARCoreSessionLifecycleHelper
 import com.theoctacoder.artryon.helper.DepthSettings
-import com.theoctacoder.artryon.helper.SnackbarHelper
+import com.theoctacoder.artryon.helper.InstantPlacementSettings
+import com.theoctacoder.artryon.mediapipe.MediaPipeListener
 import com.theoctacoder.artryon.samplerender.SampleRender
 
 
 //
 
-class MainActivity : AppCompatActivity(), ImageSegmenterHelper.SegmenterListener {
+class MainActivity : AppCompatActivity(), ImageSegmenterHelper.SegmenterListener,
+    MediaPipeListener {
     lateinit var binding: ActivityMainBinding
     lateinit var renderer: HelloArRenderer
 
@@ -49,6 +50,7 @@ class MainActivity : AppCompatActivity(), ImageSegmenterHelper.SegmenterListener
     lateinit var view: HelloArView
 
     val depthSettings = DepthSettings()
+    val instantPlacementSettings = InstantPlacementSettings()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -104,6 +106,9 @@ class MainActivity : AppCompatActivity(), ImageSegmenterHelper.SegmenterListener
         SampleRender(view.surfaceView, renderer, assets)
 
         depthSettings.onCreate(this)
+        instantPlacementSettings.onCreate(this)
+        binding.segmentedImage.setRunningMode(RunningMode.LIVE_STREAM)
+
 
     }
 
@@ -192,47 +197,64 @@ class MainActivity : AppCompatActivity(), ImageSegmenterHelper.SegmenterListener
         // Assuming the cloth category has a specific index (e.g., 1)
         val clothCategoryIndex = 1
 
-        Log.d(
-            "IMAGE_LISTENER",
-            "${
-                resultBundle.results.limit().toString()
-            } ${resultBundle.height} ${resultBundle.width}"
-        )
+//        Log.d(
+//            "IMAGE_LISTENER",
+//            "${
+//                resultBundle.results.limit().toString()
+//            } ${resultBundle.height} ${resultBundle.width}"
+//        )
+//
+//        // Create a bitmap from the cloth mask
+//        val maskBitmap = Bitmap.createBitmap(
+//            resultBundle.width,
+//            resultBundle.height,
+//            Bitmap.Config.ARGB_8888
+//        )
+//
+//        var byteBuffer = resultBundle.results
+//
+//        val pixels = IntArray(byteBuffer.capacity());
+//        val originalPixels = IntArray(resultBundle.width * resultBundle.height);
+//
+//
+//        for (i in pixels.indices) {
+//            // Using unsigned int here because selfie segmentation returns 0 or 255U (-1 signed)
+//            // with 0 being the found person, 255U for no label.
+//            // Deeplab uses 0 for background and other labels are 1-19,
+//            // so only providing 20 colors from ImageSegmenterHelper -> labelColors
+//            val index = byteBuffer.get(i).toUInt() % 20U
+//            if (index == 4U) {
+//                val color = ImageSegmenterHelper.labelColors[index.toInt()].toAlphaColor()
+//                pixels[i] = color
+//            }
+//        }
+//        val m: Matrix = Matrix()
+//        m.preScale(-1F, 1F)
+//
+//        var image = Bitmap.createBitmap(
+//            pixels,
+//            resultBundle.originalImage.width,
+//            resultBundle.originalImage.height,
+//            Bitmap.Config.ARGB_8888
+//        )
+//        image = Bitmap.createBitmap(
+//            image,
+//            0,
+//            0,
+//            resultBundle.originalImage.width,
+//            resultBundle.originalImage.height,
+//            m,
+//            false
+//        )
 
-        // Create a bitmap from the cloth mask
-        val maskBitmap = Bitmap.createBitmap(
-            resultBundle.width,
-            resultBundle.height,
-            Bitmap.Config.ARGB_8888
-        )
-
-        var byteBuffer = resultBundle.results
-
-        val pixels = IntArray(byteBuffer.capacity());
-        val originalPixels = IntArray(resultBundle.width * resultBundle.height);
-
-
-        for (i in pixels.indices) {
-            // Using unsigned int here because selfie segmentation returns 0 or 255U (-1 signed)
-            // with 0 being the found person, 255U for no label.
-            // Deeplab uses 0 for background and other labels are 1-19,
-            // so only providing 20 colors from ImageSegmenterHelper -> labelColors
-            val index = byteBuffer.get(i).toUInt() % 20U
-            if (index == 4U) {
-                val color = ImageSegmenterHelper.labelColors[index.toInt()].toAlphaColor()
-                pixels[i] = color
-            }
-        }
-        val image = Bitmap.createBitmap(
-            pixels,
-            resultBundle.width,
-            resultBundle.height,
-            Bitmap.Config.ARGB_8888
-        )
 
         runOnUiThread {
             binding.segmentedImage.visibility = View.VISIBLE
-            binding.segmentedImage.setImageBitmap(image)
+            binding.segmentedImage.setResults(
+                resultBundle.results,
+                resultBundle.originalImage.width,
+                resultBundle.originalImage.height
+            )
         }
 
 
@@ -247,10 +269,10 @@ class MainActivity : AppCompatActivity(), ImageSegmenterHelper.SegmenterListener
     }
 
     override fun onResults(resultBundle: ImageSegmenterHelper.ResultBundle) {
-        Log.d(
-            "IMAGE_LISTENER",
-            "In Results ${resultBundle.results.capacity()}"
-        )
+//        Log.d(
+//            "IMAGE_LISTENER",
+//            "In Results ${resultBundle.results.capacity()}"
+//        )
         updateARScene(resultBundle)
 
     }
@@ -265,13 +287,27 @@ class MainActivity : AppCompatActivity(), ImageSegmenterHelper.SegmenterListener
 //        binding.surfaceview.onPause()
     }
 
+    override fun segmentCurrentFrame(frame: Frame) {
+        try {
+            val image = frame.acquireCameraImage()
+            var originalBitmap = ARImageFormat.imageToBitmap(image)
+            var bitmap = ARImageFormat.rotateBitmap(bitmap = originalBitmap, -90F)
+            val mpImage = BitmapImageBuilder(bitmap).build()
+            imageSegmenter.segmentLiveStreamFrame2(mpImage, true)
+            image.close()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
 }
 
-fun Int.toAlphaColor(): Int {
-    return Color.argb(
-        MainActivity.ALPHA_COLOR,
-        Color.red(this),
-        Color.green(this),
-        Color.blue(this)
-    )
-}
+//fun Int.toAlphaColor(): Int {
+//    return Color.argb(
+//        MainActivity.ALPHA_COLOR,
+//        Color.red(this),
+//        Color.green(this),
+//        Color.blue(this)
+//    )
+//}

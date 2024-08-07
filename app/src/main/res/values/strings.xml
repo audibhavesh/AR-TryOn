@@ -7,22 +7,30 @@
     <string name="best_placement">Best Placement</string>
     <string name="point_your_phone_down">Point your phone down at an empty space, and move it around slowly</string>
 
+    <string name="media_pipe">MediaPipe</string>
 
-    <string translatable="false" name="depth_use_explanation">When Depth is enabled on supported devices, virtual objects adapt to the environment by blending in with the real world.</string>
-    <string translatable="false" name="button_text_enable_depth">Enable</string>
-    <string translatable="false" name="button_text_disable_depth">Disable</string>
-    <string translatable="false" name="options_title_with_depth">Your device supports depth</string>
-    <string translatable="false" name="options_title_without_depth">Your device does not support depth</string>
-    <string translatable="false" name="done">Done</string>
-    <string-array translatable="false" name="depth_options_array">
-        <item>Enable depth</item>
-        <item>Show depth map</item>
-    </string-array>
-    <string translatable="false" name="options_title_instant_placement">Instant Placement options</string>
-    <string-array translatable="false" name="instant_placement_options_array">
-        <item>Enable Instant Placement</item>
+    <string name="alt_bottom_sheet_chevron">Bottom sheet expandable indicator</string>
+    <string name="label_inference_time">Inference Time</string>
+    <string name="label_fps">Frames per Second</string>
+    <string name="label_confidence_threshold">Threshold</string>
+    <string name="label_max_results">Max Results</string>
+    <string name="label_threads">Number of Threads</string>
+    <string name="label_delegate">Delegate</string>
+    <string name="label_models">ML Model</string>
+    <string name="menu_camera">Camera</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="tv_gallery_placeholder">Click + to add an image or a video
+        to begin running the image segmentation.</string>
+
+    <string-array name="delegate_spinner_titles">
+        <item>CPU</item>
+        <item>GPU</item>
     </string-array>
 
-    <string translatable="false" name="searching_planes">Searching for surfaces...</string>
-    <string translatable="false" name="waiting_taps">Tap on a surface to place an object.</string>
+    <string-array name="models_spinner_titles">
+        <item>DeepLabV3</item>
+        <item>Hair Segmenter</item>
+        <item>Selfie Segmenter</item>
+        <item>Selfie Multiclass</item>
+    </string-array>
 </resources>

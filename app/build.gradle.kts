@@ -50,7 +50,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-//    implementation(libs.arsceneview)
+    implementation(libs.arsceneview)
 
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
@@ -63,8 +63,6 @@ dependencies {
     implementation(libs.tasks.vision)
 
     implementation(libs.permissionx)
-    implementation(libs.ar.core)
-    implementation(libs.obj)
 
 
 

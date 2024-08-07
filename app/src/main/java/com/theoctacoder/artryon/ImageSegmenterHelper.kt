@@ -32,16 +32,6 @@ import com.google.mediapipe.tasks.vision.imagesegmenter.ImageSegmenter
 import com.google.mediapipe.tasks.vision.imagesegmenter.ImageSegmenterResult
 import java.nio.ByteBuffer
 
-enum class Category(val id: Int) {
-    BACKGROUND(0),
-    HAIR(1),
-    BODY_SKIN(2),
-    FACE_SKIN(3),
-    CLOTHES(4),
-    OTHERS(5)
-}
-
-
 class ImageSegmenterHelper(
     var currentDelegate: Int = DELEGATE_CPU,
     var runningMode: RunningMode = RunningMode.IMAGE,
@@ -89,25 +79,21 @@ class ImageSegmenterHelper(
             DELEGATE_CPU -> {
                 baseOptionsBuilder.setDelegate(Delegate.CPU)
             }
-
             DELEGATE_GPU -> {
                 baseOptionsBuilder.setDelegate(Delegate.GPU)
             }
         }
 
-        when (currentModel) {
+        when(currentModel) {
             MODEL_DEEPLABV3 -> {
                 baseOptionsBuilder.setModelAssetPath(MODEL_DEEPLABV3_PATH)
             }
-
             MODEL_HAIR_SEGMENTER -> {
                 baseOptionsBuilder.setModelAssetPath(MODEL_HAIR_SEGMENTER_PATH)
             }
-
             MODEL_SELFIE_SEGMENTER -> {
                 baseOptionsBuilder.setModelAssetPath(MODEL_SELFIE_SEGMENTER_PATH)
             }
-
             MODEL_SELFIE_MULTICLASS -> {
                 baseOptionsBuilder.setModelAssetPath(MODEL_SELFIE_MULTICLASS_PATH)
             }
@@ -135,16 +121,13 @@ class ImageSegmenterHelper(
             val options = optionsBuilder.build()
             imagesegmenter = ImageSegmenter.createFromOptions(context, options)
         } catch (e: IllegalStateException) {
-            Log.d(
-                "IMAGE_LISTENER",
-                "${e.message}"
-            )
+            e.printStackTrace()
             imageSegmenterListener?.onError(
                 "Image segmenter failed to initialize. See error logs for details"
             )
             Log.e(
                 TAG,
-                "Image segmenter failed to load model with error: " + e.message
+                "Image segmenter failed to load model with error: " + e.printStackTrace()
             )
         } catch (e: RuntimeException) {
             // This occurs if the model being used does not support GPU
@@ -152,19 +135,9 @@ class ImageSegmenterHelper(
                 "Image segmenter failed to initialize. See error logs for " + "details",
                 GPU_ERROR
             )
-            Log.d(
-                "IMAGE_LISTENER",
-                "${e.message}"
-            )
             Log.e(
                 TAG,
                 "Image segmenter failed to load model with error: " + e.message
-            )
-        } catch (e: Exception) {
-
-            Log.d(
-                "IMAGE_LISTENER",
-                "${e.message}"
             )
         }
     }
@@ -191,7 +164,7 @@ class ImageSegmenterHelper(
         val matrix = Matrix().apply {
             postRotate(imageProxy.imageInfo.rotationDegrees.toFloat())
 
-            if (isFrontCamera) {
+            if(isFrontCamera) {
                 postScale(
                     -1f,
                     1f,
@@ -262,9 +235,7 @@ class ImageSegmenterHelper(
 //
 //        val mpImage = BitmapImageBuilder(rotatedBitmap).build()
 
-
         imagesegmenter?.segmentAsync(mpImage, frameTime)
-
     }
 
     // Runs image segmentation on single image and
@@ -295,7 +266,7 @@ class ImageSegmenterHelper(
     }
 
     // MPImage isn't necessary for this example, but the listener requires it
-    fun returnSegmentationResult(
+     fun returnSegmentationResult(
         result: ImageSegmenterResult, image: MPImage
     ) {
         val finishTimeMs = SystemClock.uptimeMillis()
@@ -333,8 +304,6 @@ class ImageSegmenterHelper(
         val width: Int,
         val height: Int,
         val inferenceTime: Long,
-
-
     )
 
     companion object {

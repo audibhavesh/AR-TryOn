@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "AR TryOn"
 include(":app")
 include(":aropengl")
+include(":cameraxtryon")

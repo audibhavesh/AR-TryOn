@@ -85,13 +85,13 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
             )
             transformedShirtBitmap =
                 Bitmap.createScaledBitmap(transformedShirtBitmap, it.width, it.height, false)
-//            canvas.drawBitmap(
-//                transformedShirtBitmap,
-//                boundingBox.left.toFloat()-310 ,
-//                boundingBox.top.toFloat() - 200,
-//                null
-//            )
-            canvas.drawBitmap(it, left, top, null)
+            canvas.drawBitmap(
+                transformedShirtBitmap,
+                boundingBox.left.toFloat()-310 ,
+                boundingBox.top.toFloat() - 200,
+                null
+            )
+//            canvas.drawBitmap(it, left, top, null)
         }
     }
 

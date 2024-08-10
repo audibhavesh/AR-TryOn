@@ -32,10 +32,7 @@ import android.graphics.Shader
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.View
-import androidx.lifecycle.findViewTreeLifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import com.google.mediapipe.tasks.vision.core.RunningMode
-import kotlinx.coroutines.launch
 import java.nio.ByteBuffer
 import kotlin.math.max
 import kotlin.math.min
@@ -51,7 +48,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
     var transformedShirtBitmap: Bitmap
 
     init {
-        shirtBitmap = BitmapFactory.decodeResource(resources, R.drawable.shirt)
+        shirtBitmap = BitmapFactory.decodeResource(resources, R.drawable.shirt_blue)
         transformedShirtBitmap = Bitmap.createBitmap(
             shirtBitmap, 0, 0, shirtBitmap.width, shirtBitmap.height, matrix, true
         )

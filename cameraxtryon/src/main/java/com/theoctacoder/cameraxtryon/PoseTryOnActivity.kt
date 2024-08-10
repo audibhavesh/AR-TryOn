@@ -1,6 +1,7 @@
 package com.theoctacoder.cameraxtryon
 
 import android.annotation.SuppressLint
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -17,7 +18,9 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.mediapipe.tasks.vision.core.RunningMode
+import com.theoctacoder.cameraxtryon.adapter.ShirtAdapter
 import com.theoctacoder.cameraxtryon.databinding.ActivityPoseTryOnBinding
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -52,7 +55,48 @@ class PoseTryOnActivity : AppCompatActivity(), PoseLandmarkerHelper.LandmarkerLi
         }
 
         setupCameraX()
+        setupRecyclerViewList()
+        binding.flipCamera.setOnClickListener {
+            toggleCamera()
+        }
+    }
 
+    private fun setupRecyclerViewList() {
+        binding.recyclerViewShirts.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+
+        // Sample shirt images (use actual drawable resource IDs)
+        val shirtImages = listOf(
+            R.drawable.shirt_blue,
+            R.drawable.shirt_red,
+            R.drawable.shirt_orange,
+            R.drawable.shirt_mat
+        )
+        val adapter = ShirtAdapter(shirtImages) { shirtImage ->
+            // Handle shirt image click
+            updateActivity(shirtImage)
+        }
+
+        binding.recyclerViewShirts.adapter = adapter
+
+    }
+
+    fun toggleCamera() {
+
+        if (cameraFacing == CameraSelector.LENS_FACING_FRONT) cameraFacing =
+            CameraSelector.LENS_FACING_BACK;
+        else if (cameraFacing == CameraSelector.LENS_FACING_BACK) cameraFacing =
+            CameraSelector.LENS_FACING_FRONT;
+
+        setupCameraX()
+    }
+
+    private fun updateActivity(shirtImage: Int) {
+        // Perform action when shirt image is clicked
+        // For example, start a new activity or update UI
+        Toast.makeText(this, "Shirt image clicked: $shirtImage", Toast.LENGTH_SHORT).show()
+        binding.overlay.shirtBitmap = BitmapFactory.decodeResource(resources, shirtImage)
+        binding.overlay.invalidate()
     }
 
     private fun setupCameraX() {

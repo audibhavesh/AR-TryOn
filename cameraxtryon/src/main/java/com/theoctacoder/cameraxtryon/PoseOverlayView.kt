@@ -29,6 +29,7 @@ import androidx.core.content.ContextCompat
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
+import kotlin.math.atan2
 import kotlin.math.max
 import kotlin.math.min
 
@@ -48,7 +49,7 @@ class PoseOverlayView(context: Context?, attrs: AttributeSet?) : View(context, a
     var shirtMatrix: Matrix? = null
 
     init {
-        shirtBitmap = BitmapFactory.decodeResource(resources, R.drawable.shirt)
+        shirtBitmap = BitmapFactory.decodeResource(resources, R.drawable.shirt_red)
 
     }
 
@@ -76,35 +77,39 @@ class PoseOverlayView(context: Context?, attrs: AttributeSet?) : View(context, a
 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
-//        results?.let { poseLandmarkerResult ->
-//            for (landmark in poseLandmarkerResult.landmarks()) {
-//
-//                for (normalizedLandmark in landmark) {
-//                    canvas.drawPoint(
-//                        normalizedLandmark.x() * imageWidth * scaleFactor,
-//                        normalizedLandmark.y() * imageHeight * scaleFactor,
-//                        pointPaint
-//                    )
-//                }
-//
-//                PoseLandmarker.POSE_LANDMARKS.forEach {
-//                    canvas.drawLine(
-//                        poseLandmarkerResult.landmarks().get(0).get(it!!.start())
-//                            .x() * imageWidth * scaleFactor,
-//                        poseLandmarkerResult.landmarks().get(0).get(it.start())
-//                            .y() * imageHeight * scaleFactor,
-//                        poseLandmarkerResult.landmarks().get(0).get(it.end())
-//                            .x() * imageWidth * scaleFactor,
-//                        poseLandmarkerResult.landmarks().get(0).get(it.end())
-//                            .y() * imageHeight * scaleFactor,
-//                        linePaint
-//                    )
-//                }
-//            }
-//        }
+        drawPoseLandmarks(canvas)
         shirtMatrix?.let {
             // Draw the shirt on the canvas
             canvas.drawBitmap(shirtBitmap, it, null)
+        }
+    }
+
+    private fun drawPoseLandmarks(canvas: Canvas) {
+        results?.let { poseLandmarkerResult ->
+            for (landmark in poseLandmarkerResult.landmarks()) {
+
+                for (normalizedLandmark in landmark) {
+                    canvas.drawPoint(
+                        normalizedLandmark.x() * imageWidth * scaleFactor,
+                        normalizedLandmark.y() * imageHeight * scaleFactor,
+                        pointPaint
+                    )
+                }
+
+                PoseLandmarker.POSE_LANDMARKS.forEach {
+                    canvas.drawLine(
+                        poseLandmarkerResult.landmarks().get(0).get(it!!.start())
+                            .x() * imageWidth * scaleFactor,
+                        poseLandmarkerResult.landmarks().get(0).get(it.start())
+                            .y() * imageHeight * scaleFactor,
+                        poseLandmarkerResult.landmarks().get(0).get(it.end())
+                            .x() * imageWidth * scaleFactor,
+                        poseLandmarkerResult.landmarks().get(0).get(it.end())
+                            .y() * imageHeight * scaleFactor,
+                        linePaint
+                    )
+                }
+            }
         }
     }
 
@@ -154,20 +159,65 @@ class PoseOverlayView(context: Context?, attrs: AttributeSet?) : View(context, a
                     shoulderDistance / shirtBitmap.width // referenceShirtWidth is a predefined constant
 
                 shirtScale += 0.2f
-                println(shirtScale)
-                var xOffset = 0F
-                var yOffset = 0F
-                if (shirtScale < 0.5) {
-                    xOffset = 450f // Adjust this value based on trial
-                    yOffset = 210f
-                } else {
+                var xOffset = 50F
+                var yOffset = 50F
+
+                xOffset = (xOffset * shirtScale * 45) / 2
+                yOffset = (yOffset * shirtScale * 22) / 2
+                println("Shirt Scale $shirtScale XOff $xOffset YOFF $yOffset")
+
+                if (shirtScale > 0.6) {
                     xOffset = 750f // Adjust this value based on trial
                     yOffset = 450f
-                    shirtScale=0.7f
+//                    shirtScale = 0.7f
                 }
+//                if (shirtScale < 0.4) {
+//                    xOffset = 430f // Adjust this value based on trial
+//                    yOffset = 200f
+//                } else if (shirtScale < 0.5) {
+//                    xOffset = 470f // Adjust this value based on trial
+//                    yOffset = 200f
+//                } else {
+//                    xOffset = 750f // Adjust this value based on trial
+//                    yOffset = 450f
+//                    shirtScale = 0.7f
+//                }
+
+                val angle = atan2(
+                    (rightShoulder.y() * imageHeight * scaleFactor - leftShoulder.y() * imageHeight * scaleFactor),
+                    (rightShoulder.x() * imageWidth * scaleFactor - leftShoulder.x() * imageWidth * scaleFactor)
+                ) * (180 / Math.PI).toFloat()
+                val adjustedAngle = if (angle > 90 || angle < -90) angle + 180 else angle
+
+//                val perspective = 0.9f // Adjust as needed
+//                val matrixValues = FloatArray(9)
+
                 shirtMatrix = Matrix()
                 shirtMatrix?.postScale(shirtScale, shirtScale)
-//                shirtMatrix?.postTranslate(shirtCenterX, shirtCenterY)
+
+//                shirtMatrix?.getValues(matrixValues)
+//                matrixValues[Matrix.MSKEW_X] = perspective
+//                matrixValues[Matrix.MSKEW_Y] = perspective
+//                shirtMatrix?.setValues(matrixValues)
+
+//                val rotationMatrix = Matrix()
+//                rotationMatrix.postRotate(
+//                    rotationX,
+//                    shirtBitmap.width / 2f,
+//                    shirtBitmap.height / 2f
+//                )
+//                rotationMatrix.postRotate(
+//                    rotationY,
+//                    shirtBitmap.width / 2f,
+//                    shirtBitmap.height / 2f
+//                )
+//                shirtMatrix?.postConcat(rotationMatrix)
+//                shirtMatrix?.postRotate(
+//                    adjustedAngle,
+//                    shirtBitmap.width / 2f,
+//                    shirtBitmap.height / 2f
+//                )
+
                 shirtMatrix?.postTranslate(shirtCenterX - xOffset, shirtCenterY - yOffset)
 
                 // Draw the shirt on the canvas

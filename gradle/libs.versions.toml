@@ -14,8 +14,14 @@ activity = "1.9.0"
 constraintlayout = "2.1.4"
 obj = "0.4.0"
 permissionx = "1.8.0"
+rajawali = "1.2.1970"
+rajawali3dRajawali = "1.2.1970"
+rajawaliVersion = "1.2.1970"
 solutionCore = "0.10.14"
 tasksVision = "0.20230731"
+lifecycleRuntimeKtx = "2.8.4"
+activityCompose = "1.9.1"
+composeBom = "2023.08.00"
 
 [libraries]
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCore" }
@@ -36,8 +42,21 @@ androidx-activity = { group = "androidx.activity", name = "activity", version.re
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 obj = { module = "de.javagl:obj", version.ref = "obj" }
 permissionx = { module = "com.guolindev.permissionx:permissionx", version.ref = "permissionx" }
+rajawali = { module = "com.github.rajawali:rajawali", version.ref = "rajawaliVersion" }
+rajawali3d-rajawali = { module = "org.rajawali3d:rajawali", version.ref = "rajawali3dRajawali" }
+sceneview = { module = "io.github.sceneview:sceneview", version.ref = "arsceneview" }
 solution-core = { module = "com.google.mediapipe:solution-core", version.ref = "solutionCore" }
 tasks-vision = { module = "com.google.mediapipe:tasks-vision", version.ref = "tasksVision" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

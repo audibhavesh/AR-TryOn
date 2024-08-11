@@ -1,3 +1,10 @@
+import java.net.URI
+
+include(":pose3dsceneview")
+
+
+
+
 pluginManagement {
     repositories {
         google {
@@ -16,6 +23,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+
     }
 }
 
@@ -23,3 +32,4 @@ rootProject.name = "AR TryOn"
 include(":app")
 include(":aropengl")
 include(":cameraxtryon")
+include(":pose3dtryon")

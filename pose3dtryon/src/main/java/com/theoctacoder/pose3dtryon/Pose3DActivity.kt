@@ -17,12 +17,10 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.theoctacoder.pose3dtryon.databinding.ActivityPose3DactivityBinding
 import io.github.sceneview.math.Position
-import io.github.sceneview.math.Rotation
 import io.github.sceneview.math.Scale
 import io.github.sceneview.model.ModelInstance
 import io.github.sceneview.node.ModelNode
@@ -51,6 +49,8 @@ class Pose3DActivity : AppCompatActivity(), PoseLandmarkerHelper.LandmarkerListe
 
     private lateinit var backgroundExecutor: ExecutorService
 
+    lateinit var renderer: ShirtRenderer
+
     var childNoes = mutableListOf<ModelNode>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +62,8 @@ class Pose3DActivity : AppCompatActivity(), PoseLandmarkerHelper.LandmarkerListe
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        renderer = ShirtRenderer(this)
+
 
         setupSceneView()
         setupCameraX()
@@ -72,10 +74,11 @@ class Pose3DActivity : AppCompatActivity(), PoseLandmarkerHelper.LandmarkerListe
     }
 
     private fun setupRajawaliSurface() {
-        val renderer = ShirtRenderer(this)
+
         binding.rajawaliSurface.setTransparent(true)
         binding.rajawaliSurface.setZOrderOnTop(true)
         binding.rajawaliSurface.setSurfaceRenderer(renderer)
+        binding.rajawaliSurface.requestRenderUpdate()
     }
 
     private fun setupSceneView() {
@@ -83,10 +86,11 @@ class Pose3DActivity : AppCompatActivity(), PoseLandmarkerHelper.LandmarkerListe
 //            val hdrFile = "studio_small_09_2k.hdr"
 //
 //            binding.sceneView.environmentLoader.loadHDREnvironment(hdrFile).apply {
-//                binding.sceneView.indirectLight = this?.indirectLight
+//                binding.sceneView.indlirectLight = this?.indirectLight
 //                binding.sceneView.skybox = this?.skybox
 //            }
-            binding.sceneView.isVisible = false
+//            binding.sceneView.isVisible = false
+
             binding.sceneView.cameraNode.apply {
                 position = Position(z = 4.0f)
             }
@@ -198,6 +202,7 @@ class Pose3DActivity : AppCompatActivity(), PoseLandmarkerHelper.LandmarkerListe
             // Attach the viewfinder's surface provider to preview use case
             preview?.setSurfaceProvider(binding.viewFinder.surfaceProvider)
 
+
         } catch (exc: Exception) {
             Log.e(TAG, "Use case binding failed", exc)
         }
@@ -307,6 +312,13 @@ class Pose3DActivity : AppCompatActivity(), PoseLandmarkerHelper.LandmarkerListe
 //
 //                }
 //            }
+            
+            renderer.updateShirt(
+                resultBundle.results.first(),
+                imageWidth = resultBundle.inputImageWidth,
+                imageHeight = resultBundle.inputImageHeight
+            )
+            binding.rajawaliSurface.requestRender()
         }
     }
 

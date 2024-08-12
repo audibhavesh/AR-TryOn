@@ -1,5 +1,8 @@
 import java.net.URI
 
+include(":posedeepar")
+
+
 include(":pose3dsceneview")
 
 
